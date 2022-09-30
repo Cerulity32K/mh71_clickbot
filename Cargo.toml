@@ -1,0 +1,11 @@
+[package]
+name = "mh71_clickbot"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+json = "0.12.4"
+wav = "1.0.0"
+stopwatch = "0.0.7"
