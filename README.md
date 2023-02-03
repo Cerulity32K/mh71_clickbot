@@ -1,6 +1,7 @@
 # Geometry Dash Clickbot (for Mega Hack v7.1)
 This program will create clicks as a wav file for a Mega Hack v7.1 macro.
 ## Tutorial
+Make sure you have downloaded the executable. You can find it in the Releases section.
 1. Set up your workspace:
 * It is recommended to create a folder and place the executable inside.
 * In the location of the executable, create a folder named `assets`. Sound bits are saved here.
