@@ -38,5 +38,6 @@ Make sure you have downloaded the executable. You can find it in the Releases se
 * Line up the first frame of the macro with the start of `out.wav`.
 * Export and save the edited video.
 
+
 #Inquiries
 Discord: Cerulity#1049
