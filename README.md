@@ -1,4 +1,4 @@
-#Inquiries
+# Inquiries
 Discord: Cerulity#1049
 
 # Geometry Dash Clickbot (for Mega Hack v7.1)
