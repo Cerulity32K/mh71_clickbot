@@ -1,6 +1,8 @@
-# Geometry Dash Clickbot (for Mega Hack v7.1)
-This program will create clicks as a wav file for a Mega Hack v7 macro.
+# Inquiries
+Discord: Cerulity#1049
 
+# Geometry Dash Clickbot (for Mega Hack v7.1)
+This program will create clicks as a wav file for a Mega Hack v7.1 macro.
 ## Tutorial
 1. Create a Mega Hack v7 macro (on the Macro tab, press Record, record inputs, input a macro name and click Save)
 2. Click on Advanced Options > Export JSON
