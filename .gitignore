@@ -1,5 +1,8 @@
 /target
 /cerulistuff
-/assets/down.wav
-/assets/up rael.wav
-/assets/up.wav
+/assets/*
+/tutorial
+/downs.txt
+/ups.txt
+/macro.json
+/output.wav

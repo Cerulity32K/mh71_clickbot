@@ -1,8 +1,9 @@
 #![allow(arithmetic_overflow)]
-use std::fs::{self, File};
+use std::{fs::{self, File}, env::args, path::Path, fmt::Display};
 
-use json::{JsonValue};
-use wav::BitDepth;
+use json::JsonValue;
+use rand::{seq::SliceRandom, thread_rng};
+use wav::{BitDepth, Header};
 use stopwatch::Stopwatch;
 
 struct Input {
@@ -63,12 +64,43 @@ fn insert_or_push(v: &mut Vec<i16>, add: &Vec<i16>, ind: usize) {
     }
 }
 
+fn load_wav<P: Display>(path: P) -> (Header, Vec<i16>) {
+    let (header, bd) = wav::read(
+        &mut File::open(format!("assets/{path}"))
+            .expect("Couldn't locate assets/down.wav!")
+        ).expect("Couldn't parse assets/down.wav!");
+    (header, to_vec_i16(&bd).expect("down sound was empty!"))
+}
+
 fn main() {
     let mut sw = Stopwatch::start_new();
+    let mut argv = args().skip(1);
     println!("Opening macro...");
-    let jval: JsonValue = json::parse(&fs::read_to_string("macro.json").expect("File could not be read!")).expect("Invalid JSON!");
+    let jval: JsonValue = json::parse(&fs::read_to_string(argv.next().unwrap_or("macro.json".to_owned())).expect("File could not be read!")).expect("Invalid JSON!");
     let mut events: Vec<Input> = vec![];
     let fps: f32;
+
+    let down_names = fs::read_to_string("downs.txt")
+        .unwrap_or(format!("down.wav"));
+    let mut iter = down_names
+        .split(['\n', '\r'])
+        .map(|s|s.trim())
+        .filter(|s|s.len() != 0);
+
+    let (downh, data) = load_wav(iter.next().expect("`downs.txt` was empty!"));
+    let mut downs = vec![data];
+    downs.extend(iter.map(|path|load_wav(path).1)
+        .collect::<Vec<Vec<i16>>>());
+    
+    let ups = fs::read_to_string("ups.txt")
+        .unwrap_or(format!("up.wav"))
+        .split(['\n', '\r'])
+        .map(|s|s.trim())
+        .filter(|s|s.len() != 0)
+        .map(|path|load_wav(path).1)
+        .collect::<Vec<Vec<i16>>>();
+    if ups.len() == 0 { panic!("`ups.txt` was empty!") }
+
     println!("Getting clicks...");
     match jval["events"].clone() {
         JsonValue::Array(arr) => {
@@ -96,16 +128,12 @@ fn main() {
         _ => {panic!("The `meta` parameter was not an array!")}
     }
     println!("Opening click audio...");
-    let (downh, down) = wav::read(&mut File::open("assets/down.wav").expect("Couldn't locate assets/down.wav!")).expect("Couldn't parse assets/down.wav!");
-    let (_, up) = wav::read(&mut File::open("assets/up.wav").expect("Couldn't locate assets/up.wav!")).expect("Couldn't parse assets/up.wav!");
-    let dcsamp: Vec<i16> = to_vec_i16(&down).expect("assets/up.wav was empty!");
-    let ucsamp: Vec<i16> = to_vec_i16(&up).expect("assets/up.wav was empty!");
     let mut output: Vec<i16> = vec![];
     println!("Adding clicks to audio file...");
     let mut i: i32 = 0;
     let mut counter: i32 = 1;
     for inp in events {
-        insert_or_push(&mut output, if inp.down {&dcsamp} else {&ucsamp}, /* debug bottleneck for many clicks --> */downh.sampling_rate as usize * downh.channel_count as usize * inp.frame as usize / fps as usize);
+        insert_or_push(&mut output, if inp.down {&downs} else {&ups}.choose(&mut thread_rng()).unwrap(), /* debug bottleneck for many clicks --> */downh.sampling_rate as usize * downh.channel_count as usize * inp.frame as usize / fps as usize);
         if i >= counter {
             println!("{} clicks finished...", i);
             counter += counter;
