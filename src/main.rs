@@ -80,6 +80,7 @@ fn main() {
     let mut events: Vec<Input> = vec![];
     let fps: f32;
 
+    println!("Opening click audio...");
     let down_names = fs::read_to_string("downs.txt")
         .unwrap_or(format!("down.wav"));
     let mut iter = down_names
@@ -91,7 +92,7 @@ fn main() {
     let mut downs = vec![data];
     downs.extend(iter.map(|path|load_wav(path).1)
         .collect::<Vec<Vec<i16>>>());
-    
+
     let ups = fs::read_to_string("ups.txt")
         .unwrap_or(format!("up.wav"))
         .split(['\n', '\r'])
@@ -127,7 +128,6 @@ fn main() {
         }
         _ => {panic!("The `meta` parameter was not an array!")}
     }
-    println!("Opening click audio...");
     let mut output: Vec<i16> = vec![];
     println!("Adding clicks to audio file...");
     let mut i: i32 = 0;
